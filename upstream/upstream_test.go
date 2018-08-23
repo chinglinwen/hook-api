@@ -53,9 +53,9 @@ func TestChangeState(t *testing.T) {
 		endpoint, title, state string
 		result                 bool
 	}{
-		{"http://172.28.136.144:8000", "ops-fs", "0", true},
-		{"http://172.28.136.144:8000", "ops-fs", "1", true},
-		//{"tcp://104.16.25.88:80", "bb", true},
+		{"http://172.28.137.148:8000", "ops_fs", "0", true}, //must be real
+		{"http://172.28.137.148:8000", "ops_fs", "1", true}, //must be real
+		//{"tcp://104.16.25.88:80", "bb", "1", true},
 		//{"104.16.25.88:80", "cc", "80"},
 	}
 	for _, v := range tests {
