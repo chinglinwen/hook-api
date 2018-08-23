@@ -110,14 +110,14 @@ func (u *Upstream) Del() error {
 // Service recovery need human manual operation.
 func ChangeState(endpoint, title, state string) (bool, error) {
 	ip, port := endpoint2ip(endpoint)
-	resp, err := resty.SetRetryCount(3).SetDebug(true).
-		R().
-		SetFormData(map[string]string{
-			"appname": title,
-			"ip":      ip,
-			"port":    port,
-			"state":   state, // int 1:up or 0:down
-		}).
+	resp, err := resty.SetRetryCount(3).
+		//SetDebug(true).
+		R().SetFormData(map[string]string{
+		"appname": title,
+		"ip":      ip,
+		"port":    port,
+		"state":   state, // int 1:up or 0:down
+	}).
 		Post(UpstreamnChangeAPI)
 
 	if err != nil {
