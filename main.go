@@ -8,21 +8,27 @@ import (
 )
 
 var (
-	env                = flag.String("env", "test", "env includes (test,pre,pro)")
-	port               = flag.String("p", "8080", "port")
-	testproject        = flag.String("t", "ops_test", "test project")
-	checkonetime       = flag.Bool("once", false, "check only once")
-	concurrentChecks   = flag.Int("cc", 100, "number of concurrent checks")
-	upstreamAPI        = flag.String("upstream", "http://upstream-pre.sched.qianbao-inc.com/get_upstream_all_instance/", "upstream fetch api url")
-	upstreamnChangeAPI = flag.String("upstreamc", "http://upstream-pre.sched.qianbao-inc.com/up_nginx_state/", "upstream change api url")
+	env         = flag.String("env", "qa", "env includes (qa,pre,pro)")
+	nginxGrp    = flag.String("nginx-grp", "BJ-SH", "nginx group for upstream includes (BJ-SH,)")
+	port        = flag.String("p", "8081", "listening port")
+	testproject = flag.String("test", "", "test project(wk name)")
 )
 
-//define a global variable
-//add new check, update it, and store the config as file(update config)
+//  define a global variable
+//  add new check, update it, and store the config as file(update config)
 
-func main() {
+func init() {
 	log.Println("starting...")
 	log.Debug.Println("debug is on")
+
+	if *testproject != "" {
+		log.Println("test project only, project: ", *testproject)
+	}
+
+	flag.Parse()
+}
+
+func main() {
 
 	e := echo.New()
 	//e.Use(middleware.Logger())
