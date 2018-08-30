@@ -50,16 +50,16 @@ func TestParseState(t *testing.T) {
 
 func TestChangeState(t *testing.T) {
 	tests := []struct {
-		endpoint, title, state string
-		result                 bool
+		endpoint, name, ns, state string
+		result                    bool
 	}{
-		{"http://172.28.137.148:8000", "ops_fs", "0", true}, //must be real
-		{"http://172.28.137.148:8000", "ops_fs", "1", true}, //must be real
-		//{"tcp://104.16.25.88:80", "bb", "1", true},
+		{"http://172.28.137.22:8000", "ops_fs", "qb-qa-10", "0", true}, //must be real
+		//{"http://172.28.137.22:8000", "ops_fs", "qb-qa-10", "1", true}, //must be real
+		//{"tcp://104.16.25.88:80", "bb","qb-qa-10","1", true},
 		//{"104.16.25.88:80", "cc", "80"},
 	}
 	for _, v := range tests {
-		ok, err := ChangeState(v.endpoint, v.title, v.state)
+		ok, err := ChangeState(v.endpoint, v.name, v.ns, v.state)
 		if err != nil || ok != v.result {
 			t.Error("err", v, "got", ok, "want", v.result)
 			continue
@@ -68,10 +68,10 @@ func TestChangeState(t *testing.T) {
 }
 
 func BenchmarkChangeState(b *testing.B) {
-	endpoint, tittle := "http://172.28.137.144:8080", "ismsgproject_ismsgapiweb_v1"
+	endpoint, name, ns := "http://172.28.137.144:8080", "ismsgproject_ismsgapiweb_v1", "qb-qa-10"
 	var n int
 	for ; n < b.N; n++ {
-		ChangeState(endpoint, tittle, "1")
+		ChangeState(endpoint, name, ns, "1")
 	}
 	fmt.Println("runed: ", n)
 }

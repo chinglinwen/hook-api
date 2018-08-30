@@ -108,26 +108,36 @@ func (u *Upstream) Del() error {
 //
 // Upstream will make it disabled ( need rethink?)
 // Service recovery need human manual operation.
-func ChangeState(endpoint, title, state string) (bool, error) {
+func ChangeState(endpoint, appname, namespace, state string) (ok bool, err error) {
 	ip, port := endpoint2ip(endpoint)
+	if ip == "" || port == "" {
+		err = fmt.Errorf("ip: %v or port: %v not provided", ip, port)
+		return
+	}
+	if appname == "" || namespace == "" || state == "" {
+		err = fmt.Errorf("appname: %v or namespace: %v or state: %v not provided", appname, namespace, state)
+		return
+	}
 	resp, err := resty.SetRetryCount(3).
 		//SetDebug(true).
 		R().SetFormData(map[string]string{
-		"appname": title,
-		"ip":      ip,
-		"port":    port,
-		"state":   state, // int 1:up or 0:down
+		"appname":   appname,
+		"namespace": namespace,
+		"ip":        ip,
+		"port":      port,
+		"state":     state, // int 1:up or 0:down
 	}).
 		Post(UpstreamnChangeAPI)
 
 	if err != nil {
-		return false, err
+		return
 	}
 
-	//log.Println("resp: ", string(resp.Body()))
+	log.Println("resp: ", limit(resp.Body()))
+
 	result, err := parseState(resp.Body())
 	if result != true {
-		log.Println("ChangeState resp: ", string(resp.Body()))
+		log.Println("ChangeState resp: ", limit(resp.Body()))
 	}
 	return result, err
 }

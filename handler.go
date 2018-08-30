@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 	"wen/hook-api/upstream"
 	"wen/svc-d/check"
 
@@ -63,10 +64,12 @@ func hookHandler(c echo.Context) error {
 	// for rolling update issue
 	// consider roll one by one, roll one, and check one, then roll another
 	// did a check, and then roll another
+	//
+	// TODO: what if failed after retry? useless check?
 	if phase == "ADD" {
-		err := check.SimpleCheck(ip, port)
+		err := check.SimpleCheckLonger(ip, port, 5*time.Minute)
 		if err != nil {
-			e := fmt.Errorf("simple tcp check for %v err:%v", appname, err)
+			e := fmt.Errorf("simple tcp check for %v after 5 minutes err:%v", appname, err)
 			log.Println(e)
 			return e
 		}
