@@ -2,7 +2,6 @@ package upstream
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"strings"
 
@@ -11,14 +10,20 @@ import (
 )
 
 var (
-	UpstreamBase       = flag.String("upstream", "http://upstream-test.sched.qianbao-inc.com:8010", "upstream base api url")
-	UpstreamAddAPI     = *UpstreamBase + "/add_nginx_upstream/"
-	UpstreamDelAPI     = *UpstreamBase + "/wk_deleted_upstream/"
-	UpstreamnChangeAPI = *UpstreamBase + "/up_nginx_state/"
-
-	UpstreamAllAPI    = *UpstreamBase + "/get_upstream_all_instance/"
-	UpstreamSingleAPI = *UpstreamBase + "/get_nginx_all/"
+	UpstreamBase       string
+	UpstreamAddAPI     string
+	UpstreamDelAPI     string
+	UpstreamnChangeAPI string
 )
+
+func Init(UpstreamBase string) {
+	UpstreamAddAPI = UpstreamBase + "/add_nginx_upstream/"
+	UpstreamDelAPI = UpstreamBase + "/wk_deleted_upstream/"
+	UpstreamnChangeAPI = UpstreamBase + "/up_nginx_state/"
+
+	//UpstreamAllAPI    = UpstreamBase + "/get_upstream_all_instance/"
+	//UpstreamSingleAPI = UpstreamBase + "/get_nginx_all/"
+}
 
 type Upstream struct {
 	Name      string

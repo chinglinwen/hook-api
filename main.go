@@ -3,15 +3,18 @@ package main
 import (
 	"flag"
 
+	"wen/hook-api/upstream"
+
 	"github.com/chinglinwen/log"
 	"github.com/labstack/echo"
 )
 
 var (
-	env         = flag.String("env", "qa", "env includes (qa,pre,pro)")
-	nginxGrp    = flag.String("nginx-grp", "BJ-SH", "nginx group for upstream includes (BJ-SH,)")
-	port        = flag.String("p", "8081", "listening port")
-	testproject = flag.String("test", "", "test project(wk name)")
+	env          = flag.String("env", "qa", "env includes (qa,pre,pro)")
+	nginxGrp     = flag.String("nginx-grp", "BJ-SH", "nginx group for upstream includes (BJ-SH,)")
+	port         = flag.String("p", "8081", "listening port")
+	testproject  = flag.String("test", "", "test project(wk name)")
+	upstreamBase = flag.String("upstream", "http://upstream-test.sched.qianbao-inc.com:8010", "upstream base api url")
 )
 
 //  define a global variable
@@ -26,6 +29,8 @@ func init() {
 	}
 
 	flag.Parse()
+	upstream.Init(*upstreamBase)
+	log.Println("using upstream", *upstreamBase)
 }
 
 func main() {
