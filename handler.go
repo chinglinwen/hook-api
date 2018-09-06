@@ -67,7 +67,7 @@ func hookHandler(c echo.Context) error {
 	//
 	// TODO: what if failed after retry? useless check?
 	if phase == "ADD" {
-		err := check.SimpleCheckLonger(ip, port, 5*time.Minute)
+		err := check.CheckLonger(appname, ip, port, 5*time.Minute)
 		if err != nil {
 			e := fmt.Errorf("simple tcp check for %v after 5 minutes err:%v", appname, err)
 			log.Println(e)
@@ -95,7 +95,7 @@ func hookHandler(c echo.Context) error {
 	}
 
 	if err != nil {
-		e := fmt.Errorf("call upstream for %v, ns:%v %v:%v, phase: %v, err: %v\n", appname, namespace, ip, port, phase, err)
+		e := fmt.Errorf("call upstream for %v, ns:%v %v:%v, phase: %v, err: %v", appname, namespace, ip, port, phase, err)
 		log.Println(e)
 		return e
 	}
