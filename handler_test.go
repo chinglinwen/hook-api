@@ -2,10 +2,10 @@ package main
 
 import "testing"
 
-func TestTransformName(t *testing.T) {
+func TestCutmName(t *testing.T) {
 	s := "ops-test-4033419859-b6w75"
 
-	name, err := transformName(s)
+	name, err := cutName(s)
 	if err != nil {
 		t.Error("transform err", err)
 	}

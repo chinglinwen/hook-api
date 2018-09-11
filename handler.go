@@ -29,9 +29,9 @@ func hookHandler(c echo.Context) error {
 
 	if podname != "" {
 		var err error
-		appname, err = transformName(podname)
+		appname, err = cutName(podname)
 		if err != nil {
-			e := fmt.Errorf("transformName err: %v", err)
+			e := fmt.Errorf("cutName err: %v", err)
 			log.Println(e)
 			return e
 		}
@@ -67,6 +67,7 @@ func hookHandler(c echo.Context) error {
 	//
 	// TODO: what if failed after retry? useless check?
 	if phase == "ADD" {
+		//for the later fetch config part, it will convert to project name
 		err := check.CheckLonger(appname, ip, port, 5*time.Minute)
 		if err != nil {
 			e := fmt.Errorf("simple tcp check for %v after 5 minutes err:%v", appname, err)
@@ -106,7 +107,7 @@ func hookHandler(c echo.Context) error {
 }
 
 // remove pod name's suffix
-func transformName(podname string) (name string, err error) {
+func cutName(podname string) (name string, err error) {
 	s := strings.Split(podname, "-")
 	n := len(s)
 	if n < 3 {
