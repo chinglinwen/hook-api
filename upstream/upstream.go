@@ -17,7 +17,7 @@ var (
 )
 
 func Init(UpstreamBase string) {
-	UpstreamAddAPI = UpstreamBase + "/add_nginx_upstream/"
+	UpstreamAddAPI = UpstreamBase + "/wk_add_upstream/"
 	UpstreamDelAPI = UpstreamBase + "/wk_deleted_upstream/"
 	UpstreamnChangeAPI = UpstreamBase + "/up_nginx_state/"
 
@@ -39,7 +39,38 @@ type Upstream struct {
 	// "weight": "int default 1000"
 }
 
+func (u *Upstream) AddValidate() error {
+	if u.Name == "" {
+		return fmt.Errorf("wk_name not provided")
+	}
+	if u.Namespace == "" {
+		return fmt.Errorf("namespace not provided")
+	}
+	if u.State == "" {
+		return fmt.Errorf("state not provided")
+	}
+	if u.IP == "" {
+		return fmt.Errorf("ip not provided")
+	}
+	if u.Port == "" {
+		return fmt.Errorf("port not provided")
+	}
+	if u.Env == "" {
+		return fmt.Errorf("env not provided")
+	}
+	if u.IsDocker == "" {
+		return fmt.Errorf("isdocker not provided")
+	}
+	if u.NginxGrp == "" {
+		return fmt.Errorf("nginxgrp not provided")
+	}
+	return nil
+}
+
 func (u *Upstream) Add() error {
+	if err := u.AddValidate(); err != nil {
+		return fmt.Errorf("parameter for add validate err: %v", err)
+	}
 	resp, err := resty.SetRetryCount(3).
 		//SetDebug(true).
 		R().SetFormData(map[string]string{
@@ -57,7 +88,7 @@ func (u *Upstream) Add() error {
 	if err != nil {
 		return err
 	}
-	log.Println("resp: ", limit(resp.Body()))
+	log.Println("resp: ", strings.Replace(limit(resp.Body()), "\n", "", -1))
 
 	state, err := parseState(resp.Body())
 	if err != nil {
@@ -78,7 +109,33 @@ func limit(body []byte) string {
 	return string(body)
 }
 
+func (u *Upstream) DelValidate() error {
+	if u.Name == "" {
+		return fmt.Errorf("wk_name not provided")
+	}
+	if u.Namespace == "" {
+		return fmt.Errorf("namespace not provided")
+	}
+	if u.IP == "" {
+		return fmt.Errorf("ip not provided")
+	}
+	if u.Port == "" {
+		return fmt.Errorf("port not provided")
+	}
+	if u.Env == "" {
+		return fmt.Errorf("env not provided")
+	}
+	if u.NginxGrp == "" {
+		return fmt.Errorf("nginxgrp not provided")
+	}
+	return nil
+}
+
 func (u *Upstream) Del() error {
+	if err := u.DelValidate(); err != nil {
+		return fmt.Errorf("parameter for del validate err: %v", err)
+	}
+
 	resp, err := resty.SetRetryCount(3).
 		//SetDebug(true).
 		R().SetFormData(map[string]string{

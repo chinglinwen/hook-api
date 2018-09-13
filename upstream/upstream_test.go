@@ -10,16 +10,21 @@ var (
 	testUpstreamnChangeAPI = "http://upstream-test.sched.qianbao-inc.com:8010/add_nginx_upstream/"
 )
 
+func init() {
+	//Init("http://upstream-test.sched.qianbao-inc.com:8010")  //test-env
+	Init("http://upstream-pre.sched.qianbao-inc.com") //pre-env
+}
+
 func TestAdd(t *testing.T) {
 	u := Upstream{
-		Name:      "ops-fs",
-		Namespace: "qb-qa-10",
+		Name:      "ops-test",
+		Namespace: "qb-pre", // "qb-qa-10" for test
 		State:     "1",
-		Env:       "qa",
+		Env:       "pre", //"qa" for test
 		IP:        "172.28.136.100",
 		Port:      "8000",
 		IsDocker:  "1",
-		NginxGrp:  "BJ-SH",
+		NginxGrp:  "BJ-M7", //"BJ-SH" for test
 	}
 	if err := u.Add(); err != nil {
 		t.Error("add error: ", err)
@@ -28,12 +33,14 @@ func TestAdd(t *testing.T) {
 
 func TestDel(t *testing.T) {
 	u := Upstream{
-		Name:      "ops-fs",
-		Namespace: "qb-qa-10",
-		Env:       "qa",
+		Name:      "ops-test",
+		Namespace: "qb-pre", // "qb-qa-10" for test
+		Env:       "pre",    //"qa" for test
+		State:     "1",
 		IP:        "172.28.136.100",
 		Port:      "8000",
-		NginxGrp:  "BJ-SH",
+		IsDocker:  "1",
+		NginxGrp:  "BJ-M7", //"BJ-SH" for test
 	}
 	if err := u.Del(); err != nil {
 		t.Error("del error: ", err)
