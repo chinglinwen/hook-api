@@ -67,10 +67,28 @@ func (u *Upstream) AddValidate() error {
 	return nil
 }
 
-func (u *Upstream) Add() error {
-	if err := u.AddValidate(); err != nil {
+func (u *Upstream) Add() (err error) {
+	if err = u.AddValidate(); err != nil {
 		return fmt.Errorf("parameter for add validate err: %v", err)
 	}
+	return retry("add", u.add, 3)
+}
+
+func retry(name string, f func() error, n int) (err error) {
+	for i := 1; i <= n; i++ {
+		err = f()
+		if err != nil {
+			log.Printf("%v failed %v times\n", name, i)
+			continue
+		}
+		log.Printf("%v is ok now\n", name)
+		return nil
+	}
+	log.Printf("end of trying %v, after %v times, err\n", name, n, err)
+	return
+}
+
+func (u *Upstream) add() error {
 	resp, err := resty.SetRetryCount(3).
 		//SetDebug(true).
 		R().SetFormData(map[string]string{
@@ -95,9 +113,8 @@ func (u *Upstream) Add() error {
 		return fmt.Errorf("upstream add err resp: %v", limit(resp.Body()))
 	}
 	if state != true {
-		return fmt.Errorf("upstream add failed resp: %v", limit(resp.Body()))
+		return fmt.Errorf("upstream add result failed resp: %v", limit(resp.Body()))
 	}
-
 	return nil
 }
 
@@ -135,7 +152,10 @@ func (u *Upstream) Del() error {
 	if err := u.DelValidate(); err != nil {
 		return fmt.Errorf("parameter for del validate err: %v", err)
 	}
+	return retry("del", u.del, 3)
+}
 
+func (u *Upstream) del() (err error) {
 	resp, err := resty.SetRetryCount(3).
 		//SetDebug(true).
 		R().SetFormData(map[string]string{
@@ -149,19 +169,20 @@ func (u *Upstream) Del() error {
 		Post(UpstreamDelAPI)
 
 	if err != nil {
-		return err
+		return
 	}
-	log.Println("resp: ", strings.Replace(limit(resp.Body()), "\n", "", -1))
+	log.Println("del resp: ", strings.Replace(limit(resp.Body()), "\n", "", -1))
 
 	state, err := parseState(resp.Body())
 	if err != nil {
-		return fmt.Errorf("upstream add err resp: %v", limit(resp.Body()))
+		err = fmt.Errorf("upstream del err resp: %v", limit(resp.Body()))
+		return
 	}
 	if state != true {
-		return fmt.Errorf("upstream add failed resp: %v", limit(resp.Body()))
+		err = fmt.Errorf("upstream del result failed resp: %v", limit(resp.Body()))
+		return
 	}
-
-	return nil
+	return
 }
 
 // ChangeState change project specific ip state, remove item from nginx
