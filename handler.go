@@ -47,6 +47,11 @@ func hookHandler(c echo.Context) error {
 		return nil
 	}
 
+	if !IsNamespaceOK(namespace, namespaces) {
+		log.Println("skip invalid namespace")
+		return nil
+	}
+
 	/* 	curPod := fmt.Sprintf("%v %v:%v", appname, ip, port)
 	   	if curPod == prePod && phase == "ADD" && prePhase == "DEL" && time.Now().Sub(preTime) < 5*time.Second {
 	   		log.Printf("hook: pre: %v, prephase: %v, cur: %v, curphase: %v\n", prePod, prePhase, curPod, phase)
@@ -117,4 +122,19 @@ func cutName(podname string) (name string, err error) {
 	suffix := fmt.Sprintf("-%v-%v", s[n-2], s[n-1])
 	name = strings.TrimSuffix(podname, suffix)
 	return
+}
+
+func IsNamespaceOK(ns string, namespaces []string) bool {
+	if len(namespaces) == 0 {
+		return true
+	}
+	if len(namespaces) == 1 && namespaces[0] == "" {
+		return true
+	}
+	for _, v := range namespaces {
+		if ns == v {
+			return true
+		}
+	}
+	return false
 }
